@@ -65,9 +65,6 @@ public class Partido {
     public void setSetsJugador2(int setJugador2) {
         this.setJugador2 = setJugador2;
     }
-    
-    
-    
-    
+
     
 }

@@ -1,4 +1,4 @@
-public class GestionFichero {
+public class ModificarFichero {
     
     //Escribe en el fichero fFichero la cadena
     void Escribir(File fFichero,String cadena)

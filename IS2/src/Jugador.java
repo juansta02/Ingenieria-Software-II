@@ -26,7 +26,7 @@ public class Jugador extends User {
         String lineaActual = this.nUsuario + ";" + this.password + ";" + this.telefono + ";";
         String lineaNueva = nUsuario + ";" + this.password + ";" + this.telefono + ";";
         File modFile = new File("usuarios.txt");
-        GestionFichero.modificar(modFile, lineaActual, lineaNueva);
+        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
         this.nUsuario = nUsuario;
     }
 
@@ -34,7 +34,7 @@ public class Jugador extends User {
         String lineaActual = this.nUsuario + ";" + this.password + ";" + this.telefono + ";";
         String lineaNueva = this.nUsuario + ";" + password + ";" + this.telefono + ";";
         File modFile = new File("usuarios.txt");
-        GestionFichero.modificar(modFile, lineaActual, lineaNueva);
+        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
         this.password = password;
     }
 
@@ -42,7 +42,7 @@ public class Jugador extends User {
         String lineaActual = this.nUsuario + ";" + this.password + ";" + this.telefono + ";";
         String lineaNueva = this.nUsuario + ";" + this.password + ";" + telefono + ";";
         File modFile = new File("usuarios.txt");
-        GestionFichero.modificar(modFile, lineaActual, lineaNueva);
+        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
         this.telefono = telefono;
     }
 
