@@ -19,11 +19,12 @@ public class User {
         /* Comprobar si el hace login es un admin */
         boolean login = false;
         if (admUser.equals(nUsuario) && admPwd.equals(password)) {
-            esAdmin = true;
+            this.esAdmin = true;
             nUsuario = admUser;
             password = admPwd;
             /* Comporbar si existe el user, en cuyo caso se inicia sesion */
         } else if (checkUser(nUsuario, password)) {
+            this.esAdmin = false;
             this.nUsuario = nUsuario;
             this.password = password;
             login = true;
@@ -81,7 +82,7 @@ public class User {
     }
 
     /* Sigin en la aplicacion, no lo puede hacer un admin */
-    public boolean sigin(String nombre, String apellido1, String apellido2, int telefono, String mail, String nUsuario,
+    public boolean singin(String nombre, String apellido1, String apellido2, int telefono, String mail, String nUsuario,
             String password) throws FileNotFoundException, IOException {
         if (admUser.equals(nUsuario) && admPwd.equals(password) || checkPlayer(nUsuario)) { //si es admin o ya existe ese nombre de usuario no lo crea
             return false;
