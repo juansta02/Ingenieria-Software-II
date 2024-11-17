@@ -5,12 +5,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Torneo {
     private int id;
-    private Date fLimiteInsc;
-    private Date fInicio;
+    private Date fInicioInsc;
+    private Date fInicioTorneo;
     private List<String> inscritos;
     private List<String> participantes;
     private List<Partido> partidos;
@@ -21,12 +22,12 @@ public class Torneo {
         return id;
     }
 
-    public Date getfLimiteInsc() {
-        return fLimiteInsc;
+    public Date getfInicioInsc() {
+        return fInicioInsc;
     }
 
-    public Date getfInicio() {
-        return fInicio;
+    public Date getfInicioTorneo() {
+        return fInicioTorneo;
     }
 
     public List<String> getInscritos() {
@@ -37,17 +38,50 @@ public class Torneo {
         return participantes;
     }
 
+    @SuppressWarnings("unchecked")
+    public void setfInicioInsc(String fInicioInsc) throws ParseException, IOException {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        if (!fInicioInsc.equals("")) {
+            this.fInicioTorneo = formatter.parse(fInicioInsc);
+        }
+        torneo.put("fechaInicioInscripcion", fInicioInsc);
+        JSONArray torneoJsonArray = (JSONArray) torneos.get("Torneos");
+        torneoJsonArray.set(id, torneo);
+        torneos.replace("Torneos", torneoJsonArray);
+        FileWriter fw = new FileWriter("IS2/files/torneos.json");
+        fw.write(torneos.toString());
+        fw.close();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setfInicioTorneo(String fInicioTorneo) throws ParseException, IOException {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        if (!fInicioInsc.equals("")) {
+            this.fInicioTorneo = formatter.parse(fInicioTorneo);
+        }
+        torneo.put("fechaInicioTorneo", fInicioTorneo);
+        JSONArray torneoJsonArray = (JSONArray) torneos.get("Torneos");
+        torneoJsonArray.set(id, torneo);
+        torneos.replace("Torneos", torneoJsonArray);
+        FileWriter fw = new FileWriter("IS2/files/torneos.json");
+        fw.write(torneos.toString());
+        fw.close();
+    }
+
+    public void setPartidos(List<Partido> partidos) {
+        this.partidos = partidos;
+    }
+
     public void setParticipantes(List<String> participantes) {
         this.participantes = participantes;
     }
 
-    public Torneo(int idTorneo) throws Exception {
+    public Torneo(int idTorneo) throws ParseException {
         this.id = idTorneo;
         // cargar json de torneos
         try (FileReader fr = new FileReader("IS2/files/torneos.json");) {
             JSONParser parser = new JSONParser();
             torneos = (JSONObject) parser.parse(fr);
-
         } catch (Exception e) {
             System.err.println("Error al abrir el archivo de torneos");
         }
@@ -60,13 +94,13 @@ public class Torneo {
         }
         // cargar fechas de torneos.json
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-        String dateString = (String) torneo.get("fechaInicio");
+        String dateString = (String) torneo.get("fechaInicioTorneo");
         if (!dateString.equals("")) {
-            this.fInicio = formatter.parse(dateString);
+            this.fInicioTorneo = formatter.parse(dateString);
         }
-        dateString = (String) torneo.get("fechaLimiteInsc");
+        dateString = (String) torneo.get("fechaInicioInscripcion");
         if (!dateString.equals("")) {
-            this.fLimiteInsc = formatter.parse(dateString);
+            this.fInicioInsc = formatter.parse(dateString);
         }
 
         // cargar los usuarios inscritos y participantes
@@ -87,14 +121,14 @@ public class Torneo {
 
     /* Jugador se inscribe en el torneo */
     @SuppressWarnings("unchecked")
-    public void inscripcion(String jugador) throws IOException {
-        inscritos.add(jugador);
+    public void inscripcion(String username) throws IOException {
+        inscritos.add(username);
         JSONArray inscritosJson = (JSONArray) torneo.get("inscritos");
-        inscritosJson.add(jugador);
-        
-        //remplaza el array de inscritos
+        inscritosJson.add(username);
+
+        // remplaza el array de inscritos
         torneo.put("inscritos", inscritosJson);
-        
+
         JSONArray torneoJsonArray = (JSONArray) torneos.get("Torneos");
         torneoJsonArray.set(id, torneo);
         torneos.replace("Torneos", torneoJsonArray);

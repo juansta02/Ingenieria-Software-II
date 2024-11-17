@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 
 public class RegisterView extends JFrame {
     private AppController controller;
+    private Jugador user;
 
     public RegisterView(AppController controller) {
         this.controller = controller;
@@ -81,12 +82,20 @@ public class RegisterView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Validación básica de los campos
-                if (nameField.getText().isEmpty() || surnameField.getText().isEmpty() || phoneField.getText().isEmpty()
-                        || emailField.getText().isEmpty() || usernameField.getText().isEmpty()
-                        || String.valueOf(passwordField.getPassword()).isEmpty()) {
+                String name = nameField.getText();
+                String surname = surnameField.getText();
+                String phone = phoneField.getText();
+                String email = emailField.getText();
+                String username = usernameField.getText();
+                String password = String.valueOf(passwordField.getPassword());
+
+                if (name.isEmpty() || surname.isEmpty() || phone.isEmpty() 
+                        || email.isEmpty() || username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos.");
                 } else {
-                    boolean registro = User.singin(nameField.getText(), surnameField.getText(), Integer.parseInt(phoneField.getText()), emailField.getText(), usernameField.getText(), tring.valueOf(passwordField.getPassword()));
+                    user = new Jugador();
+                    boolean registro = user.signin(name,surname,phone,email,username,password);
+                    controller.setUser(user);
                     if (registro) {
                         JOptionPane.showMessageDialog(null, "Usuario registrado exitosamente.");
                         controller.showLoginScreen(); // Volver a la pantalla de inicio de sesión

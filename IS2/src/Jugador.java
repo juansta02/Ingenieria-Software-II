@@ -2,68 +2,149 @@ import java.util.*;
 import java.io.*;
 
 public class Jugador extends User {
-    int telefono;
+    private String telefono;
+    private String nombre;
+    private String apellidos;
+    private String email;
 
-    
-    public Jugador (String nUsuario, String password, int telefono) {
-        login (nUsuario, password);
-        this.telefono = telefono;
+    public String getNombre() {
+        return nombre;
     }
 
-    public String getnUsuario() {
-        return nUsuario;
+    public String getApellidos() {
+        return apellidos;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public int getTelefono() {
+    public String getTelefono() {
         return telefono;
     }
 
-    public void setnUsuario(String nUsuario) {
-        String lineaActual = this.nUsuario + ";" + this.password + ";" + this.telefono + ";";
-        String lineaNueva = nUsuario + ";" + this.password + ";" + this.telefono + ";";
-        File modFile = new File("usuarios.txt");
-        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
-        this.nUsuario = nUsuario;
+    public String getEmail() {
+        return email;
+    }
+
+    public boolean setUsername(String nUsuario) {
+        boolean usrLibre = false;
+        if (usrLibre = checkUsername(nUsuario)) {
+            String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
+                    + this.telefono + ";" + this.email + ";";
+            String lineaNueva = nUsuario + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
+                    + this.telefono + ";" + this.email + ";";
+            File modFile = new File("usuarios.txt");
+            ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
+            this.username = nUsuario;
+        }
+        return usrLibre;
     }
 
     public void setPassword(String password) {
-        String lineaActual = this.nUsuario + ";" + this.password + ";" + this.telefono + ";";
-        String lineaNueva = this.nUsuario + ";" + password + ";" + this.telefono + ";";
+        String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
+                + this.telefono + ";" + this.email + ";";
+        String lineaNueva = this.username + ";" + password + ";" + this.nombre + ";" + this.apellidos + ";"
+                + this.telefono + ";" + this.email + ";";
         File modFile = new File("usuarios.txt");
         ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
         this.password = password;
     }
 
-    public void setTelefono(int telefono) {
-        String lineaActual = this.nUsuario + ";" + this.password + ";" + this.telefono + ";";
-        String lineaNueva = this.nUsuario + ";" + this.password + ";" + telefono + ";";
+    public void setNombre(String nombre) {
+        String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
+                + this.telefono + ";" + this.email + ";";
+        String lineaNueva = this.username + ";" + this.password + ";" + nombre + ";" + this.apellidos + ";"
+                + this.telefono + ";" + this.email + ";";
+        File modFile = new File("usuarios.txt");
+        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
+        this.nombre = nombre;
+    }
+
+    public void setApellidos(String apellidos) {
+        String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
+                + this.telefono + ";" + this.email + ";";
+        String lineaNueva = this.username + ";" + this.password + ";" + this.nombre + ";" + apellidos + ";"
+                + this.telefono + ";" + this.email + ";";
+        File modFile = new File("usuarios.txt");
+        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
+        this.apellidos = apellidos;
+    }
+
+    public void setTelefono(String telefono) {
+        String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
+                + this.telefono + ";" + this.email + ";";
+        String lineaNueva = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
+                + telefono + ";" + this.email + ";";
         File modFile = new File("usuarios.txt");
         ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
         this.telefono = telefono;
     }
 
-    public ArrayList<Torneo> getTorneosJugados() { //Metodo que devuelve los torneos en los que ha participado el jugador
-        return null;
+    public void setEmail(String email) {
+        String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
+                + this.telefono + ";" + this.email + ";";
+        String lineaNueva = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
+                + this.telefono + ";" + email + ";";
+        File modFile = new File("usuarios.txt");
+        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
+        this.email = email;
     }
-    
-    
-    public ArrayList<Torneo> getTorneosInscrito() { //Metodo que devuelve los torneos en los que está inscrito el jugador
+
+    public Jugador() {
+
+    }
+
+    /* Sigin en la aplicacion, no lo puede hacer un admin */
+    public boolean signin(String nombre, String apellidos, String telefono, String mail, String nUsuario,
+            String password) {
+        /* Comprueba si que no sea admin o que no exista el username */
+        if (admUser.equals(nUsuario) && admPwd.equals(password) || checkUsername(nUsuario)) {
+            return false;
+        } else {
+            return addUser(nUsuario, password, nombre, apellidos, telefono, mail);
+        }
+    }
+
+    public boolean addUser(String nUsuario, String password, String nombre, String apellidos, String telefono,
+            String email) {
+        File archivo = new File("IS2/files/usuarios.txt");
+        try (BufferedWriter escritor = new BufferedWriter(new FileWriter(archivo, true))) {
+            // Verificar si el archivo ya existe o no
+            if (!archivo.exists()) {
+                archivo.createNewFile(); // si no lo existe loc crea
+            }
+
+            // Escribir las variables en el archivo
+            escritor.write(
+                    nUsuario + ";" + password + ";" + nombre + ";" + apellidos + ";" + telefono + ";" + email + ";");
+            escritor.newLine();
+            escritor.close();
+        } catch (IOException e) {
+            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    /* Devuelve los torneos en los que ha participado el jugador */
+    public ArrayList<Torneo> getTorneosJugados() {
         return null;
     }
 
-    public ArrayList<Torneo> getTorneosAJugar() { //Metodo que devuelve los torneos que finalmente va a jugar el jugador
+    /* Metodo que devuelve los torneos en los que está inscrito */
+    public ArrayList<Torneo> getTorneosInscrito() {
         return null;
     }
 
-    public int getPuntosTorneo(Torneo torneo) { //puede visualizar los puntos obtenidos en un torneo
+    /* Devuelve los torneos en los que va a jugar */
+    public ArrayList<Torneo> getTorneosAJugar() {
+        return null;
+    }
+
+    /* Vizualizar los torneos obtenidos en un torneo */
+    public int getPuntosTorneo(Torneo torneo) {
         return 0;
     }
 
-    public int getPosicionTorneo(Torneo torneo) { //puede visualizar la posición en la que ha quedado en un torneo
+    /* Ver la posicion que quedo en un torneo */
+    public int getPosicionTorneo(Torneo torneo) {
         return 0;
     }
 

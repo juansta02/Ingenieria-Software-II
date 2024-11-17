@@ -2,7 +2,16 @@ import javax.swing.*;
 
 public class AppController {
     private JFrame currentFrame; // Ventana actual
+    private User user;
 
+    public User getUser(){
+        return user;
+    }
+
+    public void setUser(User user){
+        this.user = user;
+    }
+    
     public AppController() {
         // Inicia con la pantalla de inicio de sesión
         showLoginScreen();
@@ -17,11 +26,11 @@ public class AppController {
         currentFrame.setVisible(true);
     }
 
-    public void showMainScreen(boolean isAdmin) {
+    public void showMainScreen() {
         if (currentFrame != null) {
             currentFrame.dispose();
         }
-        MainView mainView = new MainView(this, isAdmin);
+        MainView mainView = new MainView(this, user);
         currentFrame = mainView;
         currentFrame.setVisible(true);
     }
@@ -30,12 +39,22 @@ public class AppController {
         if (currentFrame != null) {
             currentFrame.dispose();
         }
-        TournamentManagementView tmView = new TournamentManagementView(this);
+        TournamentManagementView tmView = new TournamentManagementView(this, user);
         currentFrame = tmView;
         currentFrame.setVisible(true);
     }
 
+    public void showAccountManagamentScreen(){
+        if (currentFrame != null) {
+            currentFrame.dispose();
+        }
+        AccountManagementView amView = new AccountManagementView(this, user);
+        currentFrame = amView;
+        currentFrame.setVisible(true);
+    }
+
     public void logout() {
+        user = null;
         showLoginScreen();
     }
     public void showRegisterScreen() {
@@ -45,9 +64,5 @@ public class AppController {
         RegisterView registerView = new RegisterView(this);
         currentFrame = registerView;
         currentFrame.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(AppController::new);
     }
 }

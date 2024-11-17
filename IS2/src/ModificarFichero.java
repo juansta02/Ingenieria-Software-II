@@ -1,7 +1,14 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.Random;
+
 public class ModificarFichero {
     
     //Escribe en el fichero fFichero la cadena
-    void Escribir(File fFichero,String cadena)
+    static void Escribir(File fFichero,String cadena)
     {
         BufferedWriter bw;
         try
@@ -25,7 +32,7 @@ public class ModificarFichero {
     }
 
     //Borra un fichero previemente creado (Ffichero)
-    void borrar (File Ffichero)
+    static void borrar (File Ffichero)
     {
         try
         {
@@ -43,7 +50,7 @@ public class ModificarFichero {
     }
 
    //Modifica la cadena aCadena por nCadena en el fichero fAntiguo
-    void modificar(File fAntiguo,String aCadena,String nCadena)
+    static void modificar(File fAntiguo,String aCadena,String nCadena)
     {
        
       //La dos lineas siguientes, generan un fichero nuevo de nombre el antiguo + aux + numero aleatorio
