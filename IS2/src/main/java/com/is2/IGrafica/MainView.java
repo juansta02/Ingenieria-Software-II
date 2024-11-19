@@ -39,9 +39,10 @@ public class MainView extends JFrame {
         // Menú "Cuenta"
         JMenu menuCuenta = new JMenu("Cuenta");
         JMenuItem modificarCuenta = new JMenuItem("Modificar datos");
-        modificarCuenta.addActionListener(e -> controller.showTournamentManagementScreen());
+        modificarCuenta.addActionListener(e -> controller.showAccountManagamentScreen());
         JMenuItem cerrarSesion = new JMenuItem("Cerrar Sesión");
         cerrarSesion.addActionListener(e -> controller.logout());
+        menuCuenta.add(modificarCuenta);
         menuCuenta.add(cerrarSesion);
         menuBar.add(menuCuenta);
 

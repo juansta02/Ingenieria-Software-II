@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: LoginTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.043 s <<< FAILURE! - in LoginTest
+testLoginWithNullUsername  Time elapsed: 0.029 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.lang.NullPointerException to be thrown, but nothing was thrown.
+	at LoginTest.testLoginWithNullUsername(LoginTest.java:45)
+

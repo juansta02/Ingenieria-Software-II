@@ -42,6 +42,7 @@ public class User {
         boolean login = false;
         if (admUser.equals(nUsuario) && admPwd.equals(password)) {
             this.isAdmin = true;
+            login = true;
             nUsuario = admUser;
             password = admPwd;
             /* Comporbar si existe el user, en cuyo caso se inicia sesion */

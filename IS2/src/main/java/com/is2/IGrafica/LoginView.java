@@ -55,7 +55,12 @@ public class LoginView extends JFrame {
                 // Simulación de inicio de sesión con rol
                 String usuario = userText.getText();
                 String password = new String(passwordText.getPassword());
-                user = new User();
+                if(usuario.equals("root") && password.equals("admin")){
+                    user = new Admin();
+                }
+                else{
+                    user = new Jugador();
+                }
 
                 if (user.login(usuario, password)) {
                     controller.setUser(user);

@@ -50,7 +50,7 @@ public class Torneo {
         JSONArray torneoJsonArray = (JSONArray) torneos.get("Torneos");
         torneoJsonArray.set(id, torneo);
         torneos.replace("Torneos", torneoJsonArray);
-        FileWriter fw = new FileWriter("IS2/files/torneos.json");
+        FileWriter fw = new FileWriter("files/torneos.json");
         fw.write(torneos.toString());
         fw.close();
     }
@@ -65,7 +65,7 @@ public class Torneo {
         JSONArray torneoJsonArray = (JSONArray) torneos.get("Torneos");
         torneoJsonArray.set(id, torneo);
         torneos.replace("Torneos", torneoJsonArray);
-        FileWriter fw = new FileWriter("IS2/files/torneos.json");
+        FileWriter fw = new FileWriter("files/torneos.json");
         fw.write(torneos.toString());
         fw.close();
     }
@@ -134,7 +134,7 @@ public class Torneo {
         JSONArray torneoJsonArray = (JSONArray) torneos.get("Torneos");
         torneoJsonArray.set(id, torneo);
         torneos.replace("Torneos", torneoJsonArray);
-        FileWriter fw = new FileWriter("IS2/files/torneos.json");
+        FileWriter fw = new FileWriter("files/torneos.json");
         fw.write(torneos.toString());
         fw.close();
         return true;

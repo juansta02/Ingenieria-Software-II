@@ -1,15 +1,13 @@
 package com.is2.IGrafica;
 
 import javax.swing.*;
-
-import java.awt.GridLayout;
+import javax.swing.border.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.ParseException;
-
 import com.is2.*;
-
 
 public class TournamentManagementView extends JFrame {
     private final static int FALL = 0;
@@ -44,32 +42,34 @@ public class TournamentManagementView extends JFrame {
         }
 
         setTitle("Gestión de Torneos");
-        setSize(600, 600);
+        setSize(700, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        // Contenedor principal
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(0, 2));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Márgenes generales
 
         JLabel label = new JLabel("Pantalla de Gestión de Torneos");
+        label.setFont(new Font("Arial", Font.BOLD, 16));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(label);
 
         for (int i = 0; i < torneos.length; i++) {
             JPanel torneoPanel = new JPanel();
-            torneoPanel.setLayout(new GridLayout(0, 2));
+            torneoPanel.setLayout(new GridLayout(0, 2, 10, 10)); // Espaciado interno entre componentes
+            torneoPanel.setBorder(BorderFactory.createTitledBorder("Torneo " + i)); // Caja con título
 
-            JLabel torneoLabel = new JLabel("Torneo " + i);
-            JLabel fechaInicioInscLabel = new JLabel(
-                    "Fecha de inicio de inscripción: " + torneos[i].getfInicioTorneo());
-            JLabel fechaInicioLabel = new JLabel("Fecha de inicio del torneo: " + torneos[i].getfInicioTorneo());
+            JLabel fechaInicioInscLabel = new JLabel("Inicio Inscripción: " + torneos[i].getfInicioInsc());
+            JLabel fechaInicioLabel = new JLabel("Inicio Torneo: " + torneos[i].getfInicioTorneo());
 
-            torneoPanel.add(torneoLabel);
             torneoPanel.add(fechaInicioInscLabel);
             torneoPanel.add(fechaInicioLabel);
 
             if (!isAdmin) {
                 JButton inscribirseButton = new JButton("Inscribirse");
-                int torneoId = i; // Variable para usar en la lambda
+                int torneoId = i;
                 inscribirseButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -78,45 +78,50 @@ public class TournamentManagementView extends JFrame {
                         } catch (IOException e1) {
                             JOptionPane.showMessageDialog(null, "No se pudo inscribir al torneo " + torneoId);
                         }
-
                     }
                 });
                 torneoPanel.add(inscribirseButton);
             } else {
                 JButton modificarButton = new JButton("Modificar");
-                int torneoId = i; // Variable para usar en la lambda
+                int torneoId = i;
                 modificarButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // Aquí puedes abrir una ventana o panel adicional para modificar el torneo
-                        String nuevaFechaInsc = JOptionPane
-                                .showInputDialog("Ingrese nueva fecha de inicio de inscripción (formato dd-MM-yyyy):");
-                        String nuevaFechaInicio = JOptionPane
-                                .showInputDialog("Ingrese nueva fecha de inicio del torneo (formato dd-MM-yyyy):");
+                        String nuevaFechaInsc = JOptionPane.showInputDialog(
+                                "Nueva fecha de inicio inscripción (dd-MM-yyyy):");
+                        String nuevaFechaInicio = JOptionPane.showInputDialog(
+                                "Nueva fecha de inicio torneo (dd-MM-yyyy):");
 
                         try {
                             torneos[torneoId].setfInicioInsc(nuevaFechaInsc);
                             torneos[torneoId].setfInicioTorneo(nuevaFechaInicio);
                         } catch (ParseException e1) {
-                            JOptionPane.showMessageDialog(null, "Formato incorrecto en una de las fechas");
+                            JOptionPane.showMessageDialog(null, "Formato incorrecto en las fechas");
                         } catch (IOException e1) {
-                            JOptionPane.showMessageDialog(null, "Ha habido un error al abrir el archivo");
-
+                            JOptionPane.showMessageDialog(null, "Error al abrir el archivo");
                         }
 
-                        JOptionPane.showMessageDialog(null, "Información del torneo " + torneoId + " actualizada.");
+                        JOptionPane.showMessageDialog(null, "Información del torneo actualizada.");
                         controller.showTournamentManagementScreen(); // Refrescar la vista
                     }
                 });
                 torneoPanel.add(modificarButton);
             }
 
+            // Añadir cada panel de torneo al panel principal
+            torneoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(Box.createVerticalStrut(10)); // Espaciado entre torneos
             panel.add(torneoPanel);
         }
 
+        // Botón de volver
+        JPanel backPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton backButton = new JButton("Volver");
         backButton.addActionListener(e -> controller.showMainScreen());
-        panel.add(backButton);
+        backPanel.add(backButton);
+
+        panel.add(Box.createVerticalStrut(20)); // Espaciado antes del botón de volver
+        panel.add(backPanel);
 
         add(panel);
     }

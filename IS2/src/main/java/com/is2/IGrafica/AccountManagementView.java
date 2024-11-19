@@ -1,9 +1,10 @@
 package com.is2.IGrafica;
 
 import javax.swing.*;
+
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import com.is2.*;
 
 public class AccountManagementView extends JFrame {
@@ -26,95 +27,111 @@ public class AccountManagementView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(null);
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JPanel fieldsPanel = new JPanel();
+        GroupLayout layout = new GroupLayout(fieldsPanel);
+        fieldsPanel.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        // Definimos los componentes
+        JLabel nameLabel = new JLabel("Nombre:");
+        JTextField nameField = new JTextField();
+        nameField.setEditable(!isAdmin);
+
+        JLabel passwordLabel = new JLabel("Contraseña:");
+        JPasswordField passwordField = new JPasswordField();
+        passwordField.setEditable(!isAdmin);
+
+        JLabel usernameLabel = new JLabel("Usuario:");
+        JTextField usernameField = new JTextField();
+        JLabel surnameLabel = new JLabel("Apellidos:");
+        JTextField surnameField = new JTextField();
+        JLabel phoneLabel = new JLabel("Teléfono:");
+        JTextField phoneField = new JTextField();
+        JLabel emailLabel = new JLabel("Email:");
+        JTextField emailField = new JTextField();
+
+        // Mostrar solo los campos que aplica
+        if (isAdmin) {
+            nameField.setText(admin.getUsername());
+            passwordField.setText(admin.getPassword());
+            layout.setHorizontalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(nameLabel)
+                    .addComponent(passwordLabel))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(nameField)
+                    .addComponent(passwordField)));
+            layout.setVerticalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(nameLabel)
+                    .addComponent(nameField))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(passwordLabel)
+                    .addComponent(passwordField)));
+        } else {
+            usernameField.setText(jugador.getUsername());
+            passwordField.setText(jugador.getPassword());
+            nameField.setText(jugador.getNombre());
+            surnameField.setText(jugador.getApellidos());
+            phoneField.setText(jugador.getTelefono());
+            emailField.setText(jugador.getEmail());
+
+            layout.setHorizontalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(usernameLabel)
+                    .addComponent(passwordLabel)
+                    .addComponent(nameLabel)
+                    .addComponent(surnameLabel)
+                    .addComponent(phoneLabel)
+                    .addComponent(emailLabel))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(usernameField)
+                    .addComponent(passwordField)
+                    .addComponent(nameField)
+                    .addComponent(surnameField)
+                    .addComponent(phoneField)
+                    .addComponent(emailField)));
+            layout.setVerticalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(usernameLabel)
+                    .addComponent(usernameField))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(passwordLabel)
+                    .addComponent(passwordField))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(nameLabel)
+                    .addComponent(nameField))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(surnameLabel)
+                    .addComponent(surnameField))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(phoneLabel)
+                    .addComponent(phoneField))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(emailLabel)
+                    .addComponent(emailField)));
+        }
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         JButton backButton = new JButton("Volver");
-        backButton.setBounds(200, 270, 120, 25);
-        panel.add(backButton);
+        backButton.addActionListener(e -> controller.showMainScreen());
+        buttonPanel.add(backButton);
 
-        if (isAdmin) {
-            /* Mostrar solo nombre y contraseña como no editables */
-            JLabel nameLabel = new JLabel("Nombre:");
-            nameLabel.setBounds(50, 20, 100, 25);
-            panel.add(nameLabel);
-
-            JTextField nameField = new JTextField(admin.getUsername());
-            nameField.setBounds(200, 20, 200, 25);
-            nameField.setEditable(false);
-            panel.add(nameField);
-
-            JLabel passwordLabel = new JLabel("Contraseña:");
-            passwordLabel.setBounds(50, 60, 100, 25);
-            panel.add(passwordLabel);
-
-            /* Simulación, manejar contraseñas de forma segura */
-            JPasswordField passwordField = new JPasswordField(admin.getPassword());
-            passwordField.setBounds(200, 60, 200, 25);
-            passwordField.setEditable(false);
-            panel.add(passwordField);
-        } else {
-            /* Mostrar y permitir la edición de todos los campos para el jugador */
-            JLabel usernameLabel = new JLabel("Usuario:");
-            usernameLabel.setBounds(50, 20, 100, 25);
-            panel.add(usernameLabel);
-
-            JTextField usernameField = new JTextField(jugador.getUsername());
-            usernameField.setBounds(200, 20, 200, 25);
-            panel.add(usernameField);
-
-            JLabel passwordLabel = new JLabel("Contraseña:");
-            passwordLabel.setBounds(50, 60, 100, 25);
-            panel.add(passwordLabel);
-
-            JPasswordField passwordField = new JPasswordField(jugador.getPassword());
-            passwordField.setBounds(200, 60, 200, 25);
-            panel.add(passwordField);
-
-            JLabel nameLabel = new JLabel("Nombre:");
-            nameLabel.setBounds(50, 100, 100, 25);
-            panel.add(nameLabel);
-
-            JTextField nameField = new JTextField(jugador.getNombre());
-            nameField.setBounds(200, 100, 200, 25);
-            panel.add(nameField);
-
-            JLabel surnameLabel = new JLabel("Apellidos:");
-            surnameLabel.setBounds(50, 140, 100, 25);
-            panel.add(surnameLabel);
-
-            JTextField surnameField = new JTextField(jugador.getApellidos());
-            surnameField.setBounds(200, 140, 200, 25);
-            panel.add(surnameField);
-
-            JLabel phoneLabel = new JLabel("Teléfono:");
-            phoneLabel.setBounds(50, 180, 100, 25);
-            panel.add(phoneLabel);
-
-            JTextField phoneField = new JTextField(String.valueOf(jugador.getTelefono()));
-            phoneField.setBounds(200, 180, 200, 25);
-            panel.add(phoneField);
-
-            JLabel emailLabel = new JLabel("Email:");
-            emailLabel.setBounds(50, 220, 100, 25);
-            panel.add(emailLabel);
-
-            JTextField emailField = new JTextField(jugador.getEmail());
-            emailField.setBounds(200, 220, 200, 25);
-            panel.add(emailField);
-
-            // Botón para guardar cambios
+        if (!isAdmin) {
             JButton saveButton = new JButton("Guardar Cambios");
-            saveButton.setBounds(200, 270, 150, 30);
-            panel.add(saveButton);
-
-            // Acción del botón de guardar
             saveButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     boolean hecho = jugador.setUsername(usernameField.getText());
                     if (hecho) {
-                        jugador.setPassword(new String(passwordField.getPassword())); // Guardar de forma segura
+                        jugador.setPassword(new String(passwordField.getPassword()));
                         jugador.setNombre(nameField.getText());
                         jugador.setApellidos(surnameField.getText());
                         jugador.setTelefono(phoneField.getText());
@@ -123,12 +140,14 @@ public class AccountManagementView extends JFrame {
                     } else {
                         JOptionPane.showMessageDialog(null, "Nombre de usuario ya existente.");
                     }
-
                 }
             });
+            buttonPanel.add(saveButton);
         }
-        backButton.addActionListener(e -> controller.showLoginScreen());
 
-        add(panel);
+        mainPanel.add(fieldsPanel);
+        mainPanel.add(buttonPanel);
+
+        add(mainPanel);
     }
 }
