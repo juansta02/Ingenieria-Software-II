@@ -1,1 +1,2 @@
+username;password;nombre;apellidos;telefono;email;
 h;h;h;h;h;h;

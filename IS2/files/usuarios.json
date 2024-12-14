@@ -1,0 +1,30 @@
+{
+    "Usuarios": [
+        {
+            "username": "",
+            "password": "",
+            "nombre": "",
+            "apellidos": "",
+            "telefono": "",
+            "email": "",
+            "ranking": 0,
+            "puntos totales":0,
+            "Sets totales":0,
+            "Juegos ganados":0,
+            "Juegos perdidos":0,
+            "Jugados": [
+                {
+                    "fecha": "",
+                    "id": 0,
+                    "puntos": 0,
+                    "posicion": 0,
+                    "Sets": 0,
+                    "Juegos ganados": 0,
+                    "Juegos perdidos": 0
+                }
+            ],
+            "Inscripciones": [],
+            "Participaciones": []
+        }
+    ]
+}

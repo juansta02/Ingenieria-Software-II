@@ -1,6 +1,11 @@
 package com.is2;
 
 import java.util.*;
+import java.util.Map.Entry;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import java.io.*;
 
 public class Jugador extends User {
@@ -8,6 +13,9 @@ public class Jugador extends User {
     private String nombre;
     private String apellidos;
     private String email;
+    private Map<String, Integer[]> torneosParticipados = new HashMap<>();
+    private int[] inscripciones; /* contiene el id a los torneos inscritos */
+    private int[] participaciones; /* contiene el id a los torneos que participa */
 
     public String getNombre() {
         return nombre;
@@ -25,68 +33,148 @@ public class Jugador extends User {
         return email;
     }
 
+    @SuppressWarnings("unchecked")
     public boolean setUsername(String nUsuario) {
-        boolean usrLibre = false;
-        if (usrLibre = checkUsername(nUsuario)) {
-            String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
-                    + this.telefono + ";" + this.email + ";";
-            String lineaNueva = nUsuario + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
-                    + this.telefono + ";" + this.email + ";";
-            File modFile = new File("files/usuarios.txt");
-            ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
-            this.username = nUsuario;
+        boolean result = false;
+        JSONObject jugadoresJSON = cargarJSON();
+        if (jugadoresJSON == null) {
+            return false;
         }
-        return usrLibre;
+        if (!checkUsername(nUsuario)) {
+            JSONArray usuarios = (JSONArray) jugadoresJSON.get("Usuarios");
+            for (Object obj : usuarios) {
+                JSONObject user = (JSONObject) obj;
+                if (user.get("username").equals(this.username)) {
+                    user.put("username", nUsuario);
+                    guardarJSON(jugadoresJSON);
+                    this.username = nUsuario;
+                }
+            }
+            result = true;
+        }
+        return result;
     }
 
     public void setPassword(String password) {
-        String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
-                + this.telefono + ";" + this.email + ";";
-        String lineaNueva = this.username + ";" + password + ";" + this.nombre + ";" + this.apellidos + ";"
-                + this.telefono + ";" + this.email + ";";
-        File modFile = new File("files/usuarios.txt");
-        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
+        modificarCampoJSON("password", password);
         this.password = password;
     }
 
     public void setNombre(String nombre) {
-        String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
-                + this.telefono + ";" + this.email + ";";
-        String lineaNueva = this.username + ";" + this.password + ";" + nombre + ";" + this.apellidos + ";"
-                + this.telefono + ";" + this.email + ";";
-        File modFile = new File("files/usuarios.txt");
-        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
+        modificarCampoJSON("nombre", nombre);
         this.nombre = nombre;
     }
 
     public void setApellidos(String apellidos) {
-        String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
-                + this.telefono + ";" + this.email + ";";
-        String lineaNueva = this.username + ";" + this.password + ";" + this.nombre + ";" + apellidos + ";"
-                + this.telefono + ";" + this.email + ";";
-        File modFile = new File("files/usuarios.txt");
-        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
+        modificarCampoJSON("apellidos", apellidos);
         this.apellidos = apellidos;
     }
 
     public void setTelefono(String telefono) {
-        String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
-                + this.telefono + ";" + this.email + ";";
-        String lineaNueva = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
-                + telefono + ";" + this.email + ";";
-        File modFile = new File("files/usuarios.txt");
-        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
+        modificarCampoJSON("telefono", telefono);
         this.telefono = telefono;
     }
 
     public void setEmail(String email) {
-        String lineaActual = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
-                + this.telefono + ";" + this.email + ";";
-        String lineaNueva = this.username + ";" + this.password + ";" + this.nombre + ";" + this.apellidos + ";"
-                + this.telefono + ";" + email + ";";
-        File modFile = new File("files/usuarios.txt");
-        ModificarFichero.modificar(modFile, lineaActual, lineaNueva);
+        modificarCampoJSON("email", email);
         this.email = email;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setTorneosParticipados(Map<String, Integer[]> jugados) {
+        this.torneosParticipados = jugados;
+        JSONObject jugadoresJSON = cargarJSON();
+        if (jugadoresJSON == null)
+            return;
+
+        JSONArray usuarios = (JSONArray) jugadoresJSON.get("Usuarios");
+
+        /* Modificar el usuario */
+        boolean encontrado = false;
+        for (int i = 0; i < usuarios.size() && !encontrado; i++) {
+            JSONObject user = (JSONObject) usuarios.get(i);
+            if (user.get("username").equals(this.username)) {
+                encontrado = true;
+                JSONArray jugadosArray = (JSONArray) user.get("Jugados");
+                jugadosArray.clear();
+                Set<Entry<String, Integer[]>> jugadosSet = jugados.entrySet();
+
+                /* Cargar los torneos jugados en el JSON */
+                for (Entry<String, Integer[]> torneo : jugadosSet) {
+                    String fecha = torneo.getKey();
+                    Integer[] values = torneo.getValue();
+                    JSONObject torneoJSON = new JSONObject();
+                    torneoJSON.put("fecha", fecha);
+                    torneoJSON.put("id", values[0]);
+                    torneoJSON.put("puntos", values[1]);
+                    torneoJSON.put("posicion", values[2]);
+                    torneoJSON.put("Sets", values[3]);
+                    torneoJSON.put("Juegos ganados", values[4]);
+                    torneoJSON.put("Juegos perdidos", values[5]);
+                    jugadosArray.add(torneoJSON);
+                }
+                user.put("Jugados", jugadosArray);
+                usuarios.set(i, user);
+            }
+        }
+        jugadoresJSON.put("Usuarios", usuarios);
+        guardarJSON(jugadoresJSON);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void addTorneoParticipado(Entry<String, Integer[]> torneo) {
+        JSONObject jugadoresJSON = cargarJSON();
+        if (jugadoresJSON == null)
+            return;
+
+        JSONArray usuarios = (JSONArray) jugadoresJSON.get("Usuarios");
+
+        /* Modificar el usuario */
+        boolean encontrado = false;
+        for (int i = 0; i < usuarios.size() && !encontrado; i++) {
+            JSONObject user = (JSONObject) usuarios.get(i);
+            if (user.get("username").equals(this.username)) {
+                encontrado = true;
+                JSONArray jugadosArray = (JSONArray) user.get("Jugados");
+
+                /* Agrega el torneo */
+                String fecha = torneo.getKey();
+                Integer[] values = torneo.getValue();
+                JSONObject torneoJSON = new JSONObject();
+                torneoJSON.put("fecha", fecha);
+                torneoJSON.put("id", values[0]);
+                torneoJSON.put("puntos", values[1]);
+                torneoJSON.put("posicion", values[2]);
+                torneoJSON.put("Sets", values[3]);
+                torneoJSON.put("Juegos ganados", values[4]);
+                torneoJSON.put("Juegos perdidos", values[5]);
+                jugadosArray.add(torneoJSON);
+
+                /* actualizar usuario actual y array de usuarios */
+                user.put("Jugados", jugadosArray);
+                usuarios.set(i, user);
+            }
+        }
+        /* actualizar objeto JSON */
+        jugadoresJSON.put("Usuarios", usuarios);
+        guardarJSON(jugadoresJSON);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void modificarCampoJSON(String campo, String valor) {
+        JSONObject jugadoresJSON = cargarJSON();
+        if (jugadoresJSON == null)
+            return;
+
+        JSONArray usuarios = (JSONArray) jugadoresJSON.get("Usuarios");
+        for (Object obj : usuarios) {
+            JSONObject user = (JSONObject) obj;
+            if (user.get("username").equals(this.username)) {
+                user.put(campo, valor);
+                guardarJSON(jugadoresJSON);
+                break;
+            }
+        }
     }
 
     public Jugador() {
@@ -96,9 +184,10 @@ public class Jugador extends User {
     /* Sigin en la aplicacion, no lo puede hacer un admin */
     public boolean signin(String nombre, String apellidos, String telefono, String mail, String nUsuario,
             String password) {
-                if(nombre.isEmpty() || apellidos.isEmpty() || telefono.isEmpty() || mail.isEmpty() || nUsuario.isEmpty() || password.isEmpty()){
-                    return false;
-                }
+        if (nombre.isEmpty() || apellidos.isEmpty() || telefono.isEmpty() || mail.isEmpty() || nUsuario.isEmpty()
+                || password.isEmpty()) {
+            return false;
+        }
         /* Comprueba si que no sea admin o que no exista el username */
         if (admUser.equals(nUsuario) && admPwd.equals(password) || checkUsername(nUsuario)) {
             return false;
@@ -128,6 +217,25 @@ public class Jugador extends User {
         return true;
     }
 
+    public void loadStats() {
+        JSONObject estadisticas = null;
+        try (FileReader fr = new FileReader("files/estadisticas.json");) {
+            JSONParser parser = new JSONParser();
+            estadisticas = (JSONObject) parser.parse(fr);
+        } catch (Exception e) {
+            System.err.println("Error al abrir el archivo de torneos");
+        }
+        JSONArray usuarios = (JSONArray) estadisticas.get("Usuarios");
+        boolean encontrado = false;
+        JSONObject user = null;
+        for (int i = 0; i < usuarios.size() && encontrado; i++) {
+            user = (JSONObject) usuarios.get(1);
+            String username = (String) user.get("username");
+            encontrado = this.username == username;
+        }
+
+    }
+
     /* Devuelve los torneos en los que ha participado el jugador */
     public ArrayList<Torneo> getTorneosJugados() {
         return null;
@@ -141,16 +249,6 @@ public class Jugador extends User {
     /* Devuelve los torneos en los que va a jugar */
     public ArrayList<Torneo> getTorneosAJugar() {
         return null;
-    }
-
-    /* Vizualizar los torneos obtenidos en un torneo */
-    public int getPuntosTorneo(Torneo torneo) {
-        return 0;
-    }
-
-    /* Ver la posicion que quedo en un torneo */
-    public int getPosicionTorneo(Torneo torneo) {
-        return 0;
     }
 
 }

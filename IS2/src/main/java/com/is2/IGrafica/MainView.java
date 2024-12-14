@@ -31,7 +31,7 @@ public class MainView extends JFrame {
         /* Boton para ranking */
         JButton rankingButton = new JButton("Ranking");
         rankingButton.setBounds(50, 50, 120, 40);
-        panel.add(torneosButton);
+        panel.add(rankingButton);
 
 
         JMenuBar menuBar = new JMenuBar();
@@ -53,7 +53,8 @@ public class MainView extends JFrame {
         panel.add(welcomeLabel);
 
         torneosButton.addActionListener(e -> controller.showTournamentManagementScreen());
-        add(panel);
+        rankingButton.addActionListener(e -> controller.showRankingView());
         
+        add(panel);
     }
 }

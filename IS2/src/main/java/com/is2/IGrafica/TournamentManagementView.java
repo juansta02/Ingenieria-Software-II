@@ -57,55 +57,94 @@ public class TournamentManagementView extends JFrame {
         panel.add(label);
 
         for (int i = 0; i < torneos.length; i++) {
+            final int torneoId = i;
             JPanel torneoPanel = new JPanel();
             torneoPanel.setLayout(new GridLayout(0, 2, 10, 10)); // Espaciado interno entre componentes
             torneoPanel.setBorder(BorderFactory.createTitledBorder("Torneo " + i)); // Caja con título
 
-            JLabel fechaInicioInscLabel = new JLabel("Inicio Inscripción: " + torneos[i].getfInicioInsc());
+            JLabel fechaInicioInscLabel = new JLabel("Inicio Inscripción: " + torneos[i].getfFinInsc());
             JLabel fechaInicioLabel = new JLabel("Inicio Torneo: " + torneos[i].getfInicioTorneo());
 
             torneoPanel.add(fechaInicioInscLabel);
             torneoPanel.add(fechaInicioLabel);
 
             if (!isAdmin) {
-                JButton inscribirseButton = new JButton("Inscribirse");
-                int torneoId = i;
-                inscribirseButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            torneos[torneoId].inscripcion(jugador.getUsername());
-                        } catch (IOException e1) {
-                            JOptionPane.showMessageDialog(null, "No se pudo inscribir al torneo " + torneoId);
+                if (torneos[i].getfFinInsc().getTime() < System.currentTimeMillis()) {
+                    JButton inscribirseButton = new JButton("Inscribirse");
+                    inscribirseButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                torneos[torneoId].inscripcion(jugador.getUsername());
+                            } catch (IOException e1) {
+                                JOptionPane.showMessageDialog(null, "No se pudo inscribir al torneo " + torneoId);
+                            }
                         }
-                    }
-                });
-                torneoPanel.add(inscribirseButton);
+                    });
+                    torneoPanel.add(inscribirseButton);
+                }
             } else {
-                JButton modificarButton = new JButton("Modificar");
-                int torneoId = i;
-                modificarButton.addActionListener(new ActionListener() {
+                JButton seleccionarInscritosButton = new JButton("Seleccionar Inscritos");
+                seleccionarInscritosButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        String nuevaFechaInsc = JOptionPane.showInputDialog(
-                                "Nueva fecha de inicio inscripción (dd-MM-yyyy):");
-                        String nuevaFechaInicio = JOptionPane.showInputDialog(
-                                "Nueva fecha de inicio torneo (dd-MM-yyyy):");
-
                         try {
-                            torneos[torneoId].setfInicioInsc(nuevaFechaInsc);
-                            torneos[torneoId].setfInicioTorneo(nuevaFechaInicio);
-                        } catch (ParseException e1) {
-                            JOptionPane.showMessageDialog(null, "Formato incorrecto en las fechas");
+                            admin.seleccionInscritos(torneos[torneoId]);
                         } catch (IOException e1) {
-                            JOptionPane.showMessageDialog(null, "Error al abrir el archivo");
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
                         }
-
-                        JOptionPane.showMessageDialog(null, "Información del torneo actualizada.");
-                        controller.showTournamentManagementScreen(); // Refrescar la vista
+                        JOptionPane.showMessageDialog(null, "Se han seleccionado los 16 inscritos con mejor ranking.");
                     }
                 });
-                torneoPanel.add(modificarButton);
+                torneoPanel.add(seleccionarInscritosButton);
+
+                JButton emparejamientosButton = new JButton("Realizar Emparejamientos");
+                emparejamientosButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            admin.realizarEmparejamientos(torneos[torneoId]);
+                        } catch (IOException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
+                        JOptionPane.showMessageDialog(null, "Emparejamientos realizados para el torneo.");
+                    }
+                });
+                torneoPanel.add(emparejamientosButton);
+
+                JButton calcularGanadorButton = new JButton("Calcular Ganador");
+                calcularGanadorButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        String rondaStr = JOptionPane
+                                .showInputDialog("Introduce la ronda (0=Octavos, 1=Cuartos, 2=Semis, 3=Final):");
+                        String partidoStr = JOptionPane.showInputDialog("Introduce el número de partido:");
+                        try {
+                            int ronda = Integer.parseInt(rondaStr);
+                            int partido = Integer.parseInt(partidoStr);
+                            admin.calcularGanador(torneos[torneoId], ronda, partido);
+                            JOptionPane.showMessageDialog(null, "Ganador calculado para el partido seleccionado.");
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(null, "Formato inválido de entrada.");
+                        } catch (IOException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
+                    }
+                });
+                torneoPanel.add(calcularGanadorButton);
+
+                JButton finalizarTorneoButton = new JButton("Finalizar Torneo");
+                finalizarTorneoButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        admin.finalizarTorneo(torneos[torneoId]);
+                        JOptionPane.showMessageDialog(null, "Torneo finalizado y ranking actualizado.");
+                    }
+                });
+                torneoPanel.add(finalizarTorneoButton);
             }
 
             // Añadir cada panel de torneo al panel principal

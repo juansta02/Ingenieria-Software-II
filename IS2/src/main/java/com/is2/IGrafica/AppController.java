@@ -1,22 +1,20 @@
 package com.is2.IGrafica;
 
 import javax.swing.*;
-
 import com.is2.*;
-
 
 public class AppController {
     private JFrame currentFrame; // Ventana actual
     private User user;
 
-    public User getUser(){
+    public User getUser() {
         return user;
     }
 
-    public void setUser(User user){
+    public void setUser(User user) {
         this.user = user;
     }
-    
+
     public AppController() {
         // Inicia con la pantalla de inicio de sesión
         showLoginScreen();
@@ -49,7 +47,7 @@ public class AppController {
         currentFrame.setVisible(true);
     }
 
-    public void showAccountManagamentScreen(){
+    public void showAccountManagamentScreen() {
         if (currentFrame != null) {
             currentFrame.dispose();
         }
@@ -58,10 +56,20 @@ public class AppController {
         currentFrame.setVisible(true);
     }
 
+    public void showRankingView() {
+        if (currentFrame != null) {
+            currentFrame.dispose();
+        }
+        RankingManagementView rankingView = new RankingManagementView(this, user);
+        currentFrame = rankingView;
+        currentFrame.setVisible(true);
+    }
+
     public void logout() {
         user = null;
         showLoginScreen();
     }
+
     public void showRegisterScreen() {
         if (currentFrame != null) {
             currentFrame.dispose();

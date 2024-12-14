@@ -1,6 +1,12 @@
 package com.is2;
 
 import java.util.*;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.*;
 
 public class User {
@@ -24,7 +30,7 @@ public class User {
         } else {
             return password;
         }
-    }    
+    }
 
     public boolean isAdmin() {
         return isAdmin;
@@ -33,77 +39,67 @@ public class User {
     public User() {
     }
 
-    /*
-     * Hace login en la aplicacion, a menos que se un admin. Si no existe un usuario
-     * da error
-     */
+    /* Login en la aplicación */
     public boolean login(String nUsuario, String password) {
-        /* Comprobar si el hace login es un admin */
-        boolean login = false;
         if (admUser.equals(nUsuario) && admPwd.equals(password)) {
             this.isAdmin = true;
-            login = true;
-            nUsuario = admUser;
-            password = admPwd;
-            /* Comporbar si existe el user, en cuyo caso se inicia sesion */
+            this.username = admUser;
+            this.password = admPwd;
+            return true;
         } else if (checkUser(nUsuario, password)) {
             this.isAdmin = false;
             this.username = nUsuario;
             this.password = password;
-            login = true;
+            return true;
         }
-        return login;
+        return false;
     }
 
-    /* comprueba si existe un usuario con ese nombre y esa contraseña */
-    private boolean checkUser(String nUsuario2, String password2) {
-        boolean userExist = false;
-        try (BufferedReader br = new BufferedReader(new FileReader("files/usuarios.txt"));) {
-            while (!userExist && br.ready()) {
-                String line = br.readLine();
-                String[] info = line.split(";");
-                String user = info[0];
-                String pwd = info[1];
-                userExist = nUsuario2.equals(user) && password2.equals(pwd);
+    /* Comprueba si existe un usuario con ese nombre y contraseña */
+    private boolean checkUser(String nUsuario, String password) {
+        JSONObject data = cargarJSON();
+        JSONArray usuarios = (JSONArray) data.get("Usuarios");
+
+        for (Object obj : usuarios) {
+            JSONObject user = (JSONObject) obj;
+            if (nUsuario.equals(user.get("username")) && password.equals(user.get("password"))) {
+                return true;
             }
-            br.close();
-
-        } catch (FileNotFoundException e) {
-            System.err.println("Error: el archivo usuarios.txt no ha sido encontrado");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.err.println("Error al leer el archivo usuarios.txt");
-            e.printStackTrace();
         }
-
-        return userExist;
+        return false;
     }
 
-    protected boolean checkUsername(String nUsuario2) { // comprueba si el nombre de ususario ya existe
-        boolean userExist = false;
-        try {
-            FileReader file = new FileReader("files/usuarios.txt");
-            BufferedReader br = new BufferedReader(file);
-            while (!userExist && br.ready()) {
-                String line = br.readLine();
-                String[] info = line.split(";");
-                String user = info[0];
-                userExist = nUsuario2.equals(user);
+    /* Comprueba si el nombre de usuario ya existe */
+    protected boolean checkUsername(String nUsuario) {
+        JSONObject data = cargarJSON();
+        JSONArray usuarios = (JSONArray) data.get("Usuarios");
+
+        for (Object obj : usuarios) {
+            JSONObject user = (JSONObject) obj;
+            if (nUsuario.equals(user.get("username"))) {
+                return true;
             }
-            br.close();
-
-        } catch (FileNotFoundException e) {
-            System.err.println("Error: el archivo usuarios.txt no ha sido encontrado");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.err.println("Error al leer el archivo usuarios.txt");
-            e.printStackTrace();
         }
-
-        return userExist;
+        return false;
     }
 
-    /// ----------------------------------------metodos de
-    /// admin----------------------------------------------------/
+    protected JSONObject cargarJSON() {
+        try (FileReader reader = new FileReader("files/usuarios.json")) {
+            JSONParser parser = new JSONParser();
+            return (JSONObject) parser.parse(reader);
+        } catch (IOException | ParseException e) {
+            System.err.println("Error al cargar el archivo JSON: " + e.getMessage());
+            return null;
+        }
+    }
+
+    protected void guardarJSON(JSONObject jsonObject) {
+        try (FileWriter writer = new FileWriter("files/usuarios.json")) {
+            writer.write(jsonObject.toJSONString());
+            writer.flush();
+        } catch (IOException e) {
+            System.err.println("Error al guardar el archivo JSON: " + e.getMessage());
+        }
+    }
 
 }
