@@ -51,7 +51,7 @@ public class RankingManagementView extends JFrame {
         backButton.setBounds(240, 300, 120, 25);
         panel.add(backButton);
 
-        backButton.addActionListener(e -> controller.showLoginScreen());
+        backButton.addActionListener(e -> controller.showMainScreen());
 
         add(panel);
     }

@@ -110,7 +110,7 @@ public class Admin extends User {
         JSONArray usuarios = (JSONArray) jugadoresJSON.get("Usuarios");
         List<Entry<String, Integer>> rankingList = new ArrayList<>();
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < posiciones.size() && i < 4; i++) {
             String username = posiciones.get(i);
             JSONObject user = encontrarJugador(usuarios, username);
             JSONArray jugados = (JSONArray) user.get("Jugados");
@@ -129,47 +129,48 @@ public class Admin extends User {
             jugados.add(torneoJSON);
             user.put("Jugados", jugados);
 
-            puntos += (int) user.get("puntos totales");
+            puntos += ((Long) user.get("puntos totales")).intValue();
             rankingList.add(new AbstractMap.SimpleEntry(username, puntos));
             user.put("puntos totales", puntos);
-            sets += (int) user.get("Sets totales");
+            sets += ((Long) user.get("Sets totales")).intValue();
             user.put("Sets totales", sets);
-            juegosGanados += (int) user.get("Juegos ganados");
+            juegosGanados += ((Long) user.get("Juegos ganados")).intValue();
             user.put("Juegos ganados", juegosGanados);
-            juegosPerdidos += (int) user.get("Juegos perdidos");
+            juegosPerdidos += ((Long) user.get("Juegos perdidos")).intValue();
             user.put("Juegos perdidos", juegosPerdidos);
             actualizarJugador(usuarios, user);
         }
+        if (posiciones.size() > 4) {
+            for (int i = 4; i < posiciones.size(); i++) {
+                String username = posiciones.get(i);
+                JSONObject user = encontrarJugador(usuarios, username);
+                JSONArray jugados = (JSONArray) user.get("Jugados");
+                JSONObject torneoJSON = new JSONObject();
+                torneoJSON.put("fecha", torneo.getfInicioTorneo());
+                torneoJSON.put("id", torneo.getId());
+                int puntos = 500 - 25 * (i - 4);
+                torneoJSON.put("puntos", puntos);
+                torneoJSON.put("posicion", i + 1);
+                int sets = torneo.setsGanados(username);
+                torneoJSON.put("Sets", sets);
+                int juegosGanados = torneo.setsGanados(username);
+                torneoJSON.put("Juegos ganados", juegosGanados);
+                int juegosPerdidos = torneo.juegosPerdidos(username);
+                torneoJSON.put("Juegos perdidos", juegosPerdidos);
+                jugados.add(torneoJSON);
+                user.put("Jugados", jugados);
 
-        for (int i = 4; i < posiciones.size(); i++) {
-            String username = posiciones.get(i);
-            JSONObject user = encontrarJugador(usuarios, username);
-            JSONArray jugados = (JSONArray) user.get("Jugados");
-            JSONObject torneoJSON = new JSONObject();
-            torneoJSON.put("fecha", torneo.getfInicioTorneo());
-            torneoJSON.put("id", torneo.getId());
-            int puntos = 500 - 25 * (i - 4);
-            torneoJSON.put("puntos", puntos);
-            torneoJSON.put("posicion", i + 1);
-            int sets = torneo.setsGanados(username);
-            torneoJSON.put("Sets", sets);
-            int juegosGanados = torneo.setsGanados(username);
-            torneoJSON.put("Juegos ganados", juegosGanados);
-            int juegosPerdidos = torneo.juegosPerdidos(username);
-            torneoJSON.put("Juegos perdidos", juegosPerdidos);
-            jugados.add(torneoJSON);
-            user.put("Jugados", jugados);
-
-            puntos += (int) user.get("puntos totales");
-            rankingList.add(new AbstractMap.SimpleEntry(username, puntos));
-            user.put("puntos totales", puntos);
-            sets += (int) user.get("Sets totales");
-            user.put("Sets totales", sets);
-            juegosGanados += (int) user.get("Juegos ganados");
-            user.put("Juegos ganados", juegosGanados);
-            juegosPerdidos += (int) user.get("Juegos perdidos");
-            user.put("Juegos perdidos", juegosPerdidos);
-            actualizarJugador(usuarios, user);
+                puntos += ((Long) user.get("puntos totales")).intValue();
+                rankingList.add(new AbstractMap.SimpleEntry(username, puntos));
+                user.put("puntos totales", puntos);
+                sets += ((Long) user.get("Sets totales")).intValue();
+                user.put("Sets totales", sets);
+                juegosGanados += ((Long) user.get("Juegos ganados")).intValue();
+                user.put("Juegos ganados", juegosGanados);
+                juegosPerdidos += ((Long) user.get("Juegos perdidos")).intValue();
+                user.put("Juegos perdidos", juegosPerdidos);
+                actualizarJugador(usuarios, user);
+            }
         }
         jugadoresJSON.put("Usuarios", usuarios);
         guardarJSON(jugadoresJSON);
@@ -198,7 +199,7 @@ public class Admin extends User {
             if (!added) {
                 userIn = participantes.get(i);
                 JSONObject userInJSON = encontrarJugador(usuarios, userIn);
-                int rakningIn = (int) userInJSON.get("ranking");
+                int rakningIn = ((Long) userInJSON.get("ranking")).intValue();
                 if (ranking < rakningIn) {
                     added = true;
                     userIn = participantes.set(i, username);

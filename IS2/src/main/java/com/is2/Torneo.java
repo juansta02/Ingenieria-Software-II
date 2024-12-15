@@ -1,14 +1,18 @@
 package com.is2;
 
-import java.util.*;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.*;
-
-import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import org.json.simple.parser.JSONParser;
 
 public class Torneo {
     private int id;
@@ -93,8 +97,8 @@ public class Torneo {
             partidoJSON.put("id", partido.getId());
             partidoJSON.put("Jugador 1", partido.getJugador1());
             partidoJSON.put("Jugador 2", partido.getJugador2());
-            partidoJSON.put("Juegos Jugador 1", partido.getJuegosJugador1());
-            partidoJSON.put("Juegos Jugador 2", partido.getJuegosJugador2());
+            partidoJSON.put("Sets Jugador 1", partido.getJuegosJugador1());
+            partidoJSON.put("Sets Jugador 2", partido.getJuegosJugador2());
             partidoJSON.put("ronda", partido.getRonda());
             partidoJSON.put("ganador", partido.getGanador());
             partidoJSON.put("fecha", partido.getFecha());
@@ -313,9 +317,17 @@ public class Torneo {
             String id = (String) partidoJSON.get("id");
             String jugador1 = (String) partidoJSON.get("Jugador 1");
             String jugador2 = (String) partidoJSON.get("Jugador 2");
-            int[] sets1 = (int[]) partidoJSON.get("Juegos Jugador 1");
-            int[] sets2 = (int[]) partidoJSON.get("Juegos Jugador 2");
-            int ronda = (int) partidoJSON.get("ronda");
+            JSONArray sets1JSON = (JSONArray) partidoJSON.get("Sets Jugador 1");
+            int[] sets1 = new int[6];
+            for (int index = 0; index < sets1JSON.size(); index++) {
+                sets1[i] = ((Long) sets1JSON.get(i)).intValue();
+            }
+            JSONArray sets2JSON = (JSONArray) partidoJSON.get("Sets Jugador 2");
+            int[] sets2 = new int[6];
+            for (int index = 0; index < sets2JSON.size(); index++) {
+                sets2[i] = ((Long) sets2JSON.get(i)).intValue();
+            }
+            int ronda = ((Long) partidoJSON.get("ronda")).intValue();
             String ganador = (String) partidoJSON.get("ganador");
             // cargar fecha
             Date fecha = null;

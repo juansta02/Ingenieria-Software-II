@@ -1,12 +1,15 @@
 package com.is2;
 
-import java.util.*;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import java.io.*;
 
 public class Jugador extends User {
     private String telefono;
@@ -180,8 +183,7 @@ public class Jugador extends User {
     public Jugador() {
 
     }
-
-    /* Sigin en la aplicacion, no lo puede hacer un admin */
+    @SuppressWarnings("unchecked")
     public boolean signin(String nombre, String apellidos, String telefono, String mail, String nUsuario,
             String password) {
         if (nombre.isEmpty() || apellidos.isEmpty() || telefono.isEmpty() || mail.isEmpty() || nUsuario.isEmpty()
@@ -195,25 +197,38 @@ public class Jugador extends User {
             return addUser(nUsuario, password, nombre, apellidos, telefono, mail);
         }
     }
-
+    @SuppressWarnings("unchecked")
     public boolean addUser(String nUsuario, String password, String nombre, String apellidos, String telefono,
             String email) {
-        File archivo = new File("files/usuarios.txt");
-        try (BufferedWriter escritor = new BufferedWriter(new FileWriter(archivo, true))) {
-            // Verificar si el archivo ya existe o no
-            if (!archivo.exists()) {
-                archivo.createNewFile(); // si no lo existe loc crea
-            }
-
-            // Escribir las variables en el archivo
-            escritor.write(
-                    nUsuario + ";" + password + ";" + nombre + ";" + apellidos + ";" + telefono + ";" + email + ";");
-            escritor.newLine();
-            escritor.close();
-        } catch (IOException e) {
-            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+        if(checkUsername(nUsuario)){
             return false;
         }
+        JSONObject jugadores = cargarJSON();
+        JSONArray usuariosArray = (JSONArray) jugadores.get("Usuarios");
+
+        // Crear el nuevo usuario
+        JSONObject nuevoUsuario = new JSONObject();
+        nuevoUsuario.put("username", nUsuario);
+        nuevoUsuario.put("password", password);
+        nuevoUsuario.put("nombre", nombre);
+        nuevoUsuario.put("apellidos", apellidos);
+        nuevoUsuario.put("telefono", telefono);
+        nuevoUsuario.put("email", email);
+        nuevoUsuario.put("ranking", 0);
+        nuevoUsuario.put("puntos totales", 0);
+        nuevoUsuario.put("Sets totales", 0);
+        nuevoUsuario.put("Juegos ganados", 0);
+        nuevoUsuario.put("Juegos perdidos", 0);
+
+        // Crear listas vacías para Jugados, Inscripciones y Participaciones
+        nuevoUsuario.put("Jugados", new JSONArray());
+        nuevoUsuario.put("Inscripciones", new JSONArray());
+        nuevoUsuario.put("Participaciones", new JSONArray());
+
+        // Añadir el nuevo usuario al array
+        usuariosArray.add(nuevoUsuario);
+        jugadores.put("Usuarios",usuariosArray);
+        guardarJSON(jugadores);
         return true;
     }
 
